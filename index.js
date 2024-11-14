@@ -13,7 +13,6 @@ require("dotenv").config();
 
 const embeddingModelUsed = "text-embedding-004";
 const geminiModelUsed = "gemini-1.5-pro";
-
 const promptContext = {
   model:
     "Por favor, responda apenas com informações disponíveis no contexto. Não inclua informações externas ou de outros sites. Responda sempre em português.",
@@ -35,7 +34,6 @@ app.post("/embed", async (req, res) => {
   try {
     const url = req.body.url;
     if (url) {
-      console.log("Generating and storing embeddings...", url);
       await generateAndStoreEmbeddings(url);
       res.status(200).json({ message: "Embedded com sucesso" });
     }
@@ -44,6 +42,19 @@ app.post("/embed", async (req, res) => {
   }
 });
 
+/**
+ * Generates and stores embeddings for the content of a given URL.
+ *
+ * This function performs the following steps:
+ * 1. Initializes a GoogleGenerativeAI instance with the provided API key.
+ * 2. Loads the content from the specified URL using CheerioWebBaseLoader.
+ * 3. Splits the loaded content into smaller chunks for processing.
+ * 4. Generates embeddings for each chunk using the specified generative model.
+ * 5. Stores the embeddings along with the original content and context information in a Supabase table.
+ *
+ * @param {string} url - The URL of the content to generate embeddings for.
+ * @throws Will throw an error if there is an issue with inserting data into the Supabase table.
+ */
 async function generateAndStoreEmbeddings(url) {
   const context_version = Date.now();
   const context_origin = url;
@@ -94,6 +105,14 @@ app.post("/query", async (req, res) => {
 });
 
 // Função para lidar com consultas baseadas em embeddings
+/**
+ * Handles a query by generating an embedding, finding matching documents, and generating a response.
+ *
+ * @param {string} query - The user's query.
+ * @param {string} context_origin - The origin context for the query.
+ * @returns {Promise<string>} - The generated response text.
+ * @throws Will throw an error if the RPC call to Supabase fails.
+ */
 async function handleQuery(query, context_origin) {
   const input = query.replace(/\n/g, " "); // Limpa a consulta removendo quebras de linha
 
@@ -125,7 +144,6 @@ async function handleQuery(query, context_origin) {
 
   const gemini = genAI.getGenerativeModel({ model: geminiModelUsed });
 
-  // console.log(promptContext.user.parts[0].text.replace("{contextText}", contextText).replace("{query}", query))
   const res = await gemini.generateContent({
     contents: [
       {

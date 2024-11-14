@@ -1,87 +1,113 @@
-# Hacktoon Project
+Aqui está uma versão aprimorada em Markdown:
 
-Este projeto foi desenvolvido para um Hackathon sobre Inteligência Artificial organizado pela empresa DrConsulta. O objetivo do projeto é utilizar dados fornecidos para criar soluções inovadoras no campo da saúde.
+# Skeleton Hackathon
+
+Este projeto foi desenvolvido para um Hackathon focado em Inteligência Artificial organizado pela Dr.Consulta. O objetivo é utilizar dados fornecidos para criar soluções inovadoras na área de saúde.
 
 ## Estrutura do Projeto
 
+```
+index.js
+  ├── /embed
+  └── /query
+```
 
-## Passos para reproduzir
+## Passos para Reproduzir
 
-### Clone o Projeto
+### 1. Clone o Projeto
 
 ```bash
 git clone https://github.com/brunods-drc/skeleton-hackathon-drc.git
 ```
 
-### Configuração do supabase 
+### 2. Configuração do Supabase
 
 #### Supabase Local
 
+Para rodar o Supabase localmente:
+
 ```bash 
-# Get the code
+# Clone o repositório do Supabase
 git clone --depth 1 https://github.com/supabase/supabase
 
-# Go to the docker folder
+# Navegue até a pasta docker
 cd supabase/docker
 
-# Copy the fake env vars
+# Copie as variáveis de ambiente
 cp .env.example .env
 
-# Pull the latest images
+# Baixe as imagens mais recentes
 docker compose pull
 
-# Start the services (in detached mode)
+# Inicie os serviços em modo detached
 docker compose up -d
 ```
 
-troubleshoting: https://supabase.com/docs/guides/self-hosting/docker
+**Dúvidas:** Para mais informações, consulte a [documentação do Supabase](https://supabase.com/docs/guides/self-hosting/docker).
 
-ps: Caso encontre problemas com a instalação do supabase local, é possivel criar uma conta gratuita e rodar um projeto em: https://supabase.com/
+> **Nota:** Se houver problemas com a instalação local, você pode criar uma conta gratuita e executar o projeto diretamente pelo site: [supabase.com](https://supabase.com/).
 
-#### Configuração do banco vetorial e criação de tabela 
+#### Configuração do Banco Vetorial e Criação de Tabelas
 
-1. acesse http://localhost:8000
+1. Acesse o painel em [http://localhost:8000](http://localhost:8000).
+   - **Usuário:** supabase
+   - **Senha:** this_password_is_insecure_and_should_be_updated *(ou a senha definida no arquivo `.env` em `supabase/docker/.env`)*.
 
-user: supabase
-pass: this_password_is_insecure_and_should_be_updated
+2. No menu superior esquerdo, selecione "SQL Query" e execute o script em `setup.sql`.
+   - **Retorno esperado:** "Success. No rows returned".
 
-( ou o que foi definido em: supabase/docker/.env )
+### 3. Criação de uma Chave de API no Google AI Studio
 
-2. Vá em SQL Query ( canto esquerdo superior )
+1. Acesse [Google AI Studio](https://aistudio.google.com/prompts/new_chat).
+2. Clique em **GET API KEY** para gerar uma nova chave e adicione-a no arquivo `.env` deste projeto.
 
-rode o script presente em: setup.sql
--> retorno esperado: "Success. No rows returned"
+### 4. Instale as Dependências
 
-#### Crie uma chave de API Google AI Studio
-
-acesse: https://aistudio.google.com/prompts/new_chat
-clique em GET API KEY.
-Gere uma nova chave e adicione no .env deste projeto.
-
-#### Instlando deps
 ```bash
 yarn
-````
+```
 ou 
 ```bash
-npm i
+npm install
 ```
 
-#### Excute o projeto
+### 5. Execute o Projeto
 
 ```bash
 yarn start
-````
+```
 ou
 ```bash
 npm run start
 ```
 
-## Objetivo
+### 6. Testando o Projeto
 
-O objetivo principal deste projeto é explorar e analisar os dados fornecidos pela DrConsulta para desenvolver soluções baseadas em IA que possam melhorar os serviços de saúde oferecidos pela empresa.
-# skeleton-hackathon-drc
+**Inserindo uma URL para Embedding:**
 
+```bash
+curl --request POST \
+  --url http://localhost:3035/embed \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/10.0.0' \
+  --data '{
+        "url": "https://drconsulta.com/ajuda"
+}'
+```
 
-## Refs
-https://ai.google.dev/gemini-api/docs/embeddings?hl=pt-br
+**Consultando Informações:**
+
+```bash
+curl --request POST \
+  --url http://localhost:3035/query \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/10.0.0' \
+  --data '{"query": "em quais cidades a dr.consulta atende ?", "context_origin": "https://drconsulta.com/ajuda" }'
+```
+
+**Retorno esperado:**  
+`"O dr.consulta atende presencialmente em São Paulo, Rio de Janeiro e Belo Horizonte e em todo o Brasil através de telemedicina."`
+
+## Referências
+
+- [Documentação de Embeddings da API Google Gemini](https://ai.google.dev/gemini-api/docs/embeddings?hl=pt-br)
