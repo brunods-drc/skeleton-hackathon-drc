@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3035:3035"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - supabase
+    volumes:
+      - .:/usr/src/app
+
+#   supabase:
+#     image: supabase/postgres:15.1.1.78
+#     ports:
+#       - "8000:5432"
+#     environment:
+#       POSTGRES_PASSWORD: "supabase"
+#       POSTGRES_DB: "postgres"
+#     volumes:
+#       - supabase_data:/var/lib/postgresql/data
+#     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U postgres"]
+
+#   supabase-migrations:
+#     image: postgres:latest
+#     restart: "no"
+#     depends_on:
+#       - supabase
+#     volumes:
+#       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+#     environment:
+#       POSTGRES_USER: "postgres"
+#       POSTGRES_PASSWORD: "supabase"
+#       POSTGRES_DB: "postgres"
+#     entrypoint: ["/bin/sh", "-c", "until pg_isready -h supabase -U postgres; do sleep 1; done && PGPASSWORD='supabase' psql -h supabase -U postgres -d postgres -f /docker-entrypoint-initdb.d/setup.sql"]
+
+# volumes:
+#   supabase_data:
